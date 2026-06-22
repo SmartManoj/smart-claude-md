@@ -85,7 +85,7 @@ mitigation — which is exactly what these rules are.
 
 ## Contributing
 
-Found a Claude behavior worth correcting? Open a PR adding one rule. Keep it: one sentence, plain English, "the user" phrasing, project-agnostic.
+Found a Claude behavior worth correcting? Open a PR adding one rule, following the [rule-writing guideline](./guideline.md).
 
 ## License
 
