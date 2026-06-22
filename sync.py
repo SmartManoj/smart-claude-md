@@ -13,12 +13,11 @@ import subprocess
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent
-REPO_CLAUDE_MD = REPO_DIR / "CLAUDE.md"
+REPO_CLAUDE_MD = REPO_DIR / "SMART-CLAUDE.md"
 GLOBAL_CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
 
 # Forward slashes work cross-platform in the @import path.
 IMPORT_LINE = f"@{REPO_CLAUDE_MD.as_posix()}"
-MARKER = "<!-- smart-claude-md (managed by sync.py) -->"
 
 
 def pull() -> None:
@@ -34,8 +33,7 @@ def ensure_import() -> None:
         print(f"Import already present in {GLOBAL_CLAUDE_MD}")
         return
 
-    block = f"\n{MARKER}\n{IMPORT_LINE}\n"
-    GLOBAL_CLAUDE_MD.write_text(text.rstrip() + "\n" + block, encoding="utf-8")
+    GLOBAL_CLAUDE_MD.write_text(text.rstrip() + "\n" + IMPORT_LINE + "\n", encoding="utf-8")
     print(f"Added import to {GLOBAL_CLAUDE_MD}:\n  {IMPORT_LINE}")
 
 

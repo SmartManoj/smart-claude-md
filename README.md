@@ -13,7 +13,7 @@ This repo keeps every rule **one sentence, plain English, phrased as "the user,"
 
 ## The rules
 
-See [`CLAUDE.md`](./CLAUDE.md).
+See [`SMART-CLAUDE.md`](./SMART-CLAUDE.md).
 
 ## Usage
 
@@ -36,11 +36,10 @@ rules and adds a native `@import` line to `~/.claude/CLAUDE.md` (idempotent):
 python sync.py
 ```
 
-It appends a managed block to your global CLAUDE.md:
+It appends a single import line to your global CLAUDE.md:
 
 ```
-<!-- smart-claude-md (managed by sync.py) -->
-@/path/to/smart-claude-md/CLAUDE.md
+@/path/to/smart-claude-md/SMART-CLAUDE.md
 ```
 
 ### Daily auto-sync
