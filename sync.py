@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
 """Sync smart-claude-md into your global CLAUDE.md.
 
-- Ensures `~/.claude/CLAUDE.md` imports this repo's CLAUDE.md via the
-  native `@path` include (added once, idempotently).
+- Ensures `~/.claude/CLAUDE.md` imports this repo's rules via the native
+  `@path` include (added once, idempotently).
 - Pulls the latest rules from the repo so the import always sees fresh content.
 
-Run:  python sync.py
+Run:
+  python sync.py            # pull + ensure the import line
+  python sync.py --install  # also install a login auto-sync (Windows Startup)
 """
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent
 REPO_CLAUDE_MD = REPO_DIR / "SMART-CLAUDE.md"
 GLOBAL_CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
+STARTUP_VBS_NAME = "smart-claude-md-sync.vbs"
 
 # Forward slashes work cross-platform in the @import path.
 IMPORT_LINE = f"@{REPO_CLAUDE_MD.as_posix()}"
@@ -37,7 +42,37 @@ def ensure_import() -> None:
     print(f"Added import to {GLOBAL_CLAUDE_MD}:\n  {IMPORT_LINE}")
 
 
+def install() -> None:
+    """Install a silent login auto-sync (this script) into the OS startup."""
+    if sys.platform != "win32":
+        print("--install supports Windows (Startup folder) only.")
+        print("On macOS/Linux, add a cron entry instead (see README).")
+        return
+
+    appdata = os.environ.get("APPDATA")
+    if not appdata:
+        print("Could not locate the Startup folder (%APPDATA% is unset).")
+        return
+
+    startup_dir = Path(appdata) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup"
+    startup_dir.mkdir(parents=True, exist_ok=True)
+
+    py = sys.executable or "python"
+    script = Path(__file__).resolve()
+    # VBS launches python with a hidden window (0) so login stays flash-free.
+    # Double-quotes are doubled to escape them inside the VBS string literal.
+    vbs = (
+        "' Silently sync smart-claude-md at login (no console window).\n"
+        f'CreateObject("WScript.Shell").Run """{py}"" ""{script}""", 0, False\n'
+    )
+    target = startup_dir / STARTUP_VBS_NAME
+    target.write_text(vbs, encoding="utf-8")
+    print(f"Installed login auto-sync: {target}")
+
+
 if __name__ == "__main__":
+    if "--install" in sys.argv[1:]:
+        install()
     pull()
     ensure_import()
     print("Done.")

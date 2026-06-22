@@ -42,9 +42,19 @@ It appends a single import line to your global CLAUDE.md:
 @/path/to/smart-claude-md/SMART-CLAUDE.md
 ```
 
-### Daily auto-sync
+### Auto-sync at login (Windows)
 
-Run `sync.py` once a day so rule updates land automatically.
+```bash
+python sync.py --install
+```
+
+This drops a hidden launcher (`smart-claude-md-sync.vbs`) in your **Startup
+folder**, so the rules re-sync silently at every login. The launcher is generated
+with your exact Python path, so it's reproducible on any machine you clone to.
+
+### Daily auto-sync (fixed timer)
+
+For a true daily run regardless of login, schedule `sync.py` directly.
 
 **Windows (Task Scheduler):**
 
