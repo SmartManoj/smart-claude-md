@@ -13,9 +13,7 @@ This repo keeps every rule **one sentence, plain English, phrased as "the user,"
 
 ## The rules
 
-See [`CLAUDE.md`](./CLAUDE.md). Currently:
-
-1. **Answer first.** When the user asks a question, answer it first — give the reason — before taking any action or calling a tool.
+See [`CLAUDE.md`](./CLAUDE.md).
 
 ## Usage
 
