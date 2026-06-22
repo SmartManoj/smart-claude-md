@@ -26,6 +26,40 @@ Append a rule to your global config (applies to every project):
 
 …or to a project-level `CLAUDE.md` in the repo root.
 
+## Sync
+
+Rather than copy-pasting, keep the rules as this separate repo and **import** them
+into your global config. `sync.py` does this for you — it `git pull`s the latest
+rules and adds a native `@import` line to `~/.claude/CLAUDE.md` (idempotent):
+
+```bash
+python sync.py
+```
+
+It appends a managed block to your global CLAUDE.md:
+
+```
+<!-- smart-claude-md (managed by sync.py) -->
+@/path/to/smart-claude-md/CLAUDE.md
+```
+
+### Daily auto-sync
+
+Run `sync.py` once a day so rule updates land automatically.
+
+**Windows (Task Scheduler):**
+
+```powershell
+schtasks /Create /TN "smart-claude-md-sync" /SC DAILY /ST 09:00 /F ^
+  /TR "python \"%USERPROFILE%\smart-claude-md\sync.py\""
+```
+
+**macOS / Linux (cron — `crontab -e`):**
+
+```
+0 9 * * * cd ~/smart-claude-md && python3 sync.py
+```
+
 ## Background
 
 The "answer the question before acting" behavior is a recognized one. In
