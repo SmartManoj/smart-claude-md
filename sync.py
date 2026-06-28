@@ -7,11 +7,13 @@
 
 Run:
   python sync.py            # pull + ensure the import line
-  python sync.py --install  # also install a login auto-sync (Windows Startup)
+  python sync.py --install  # also install login auto-sync + the ✅ Stop hook
 """
 from __future__ import annotations
 
+import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -20,6 +22,10 @@ REPO_DIR = Path(__file__).resolve().parent
 REPO_CLAUDE_MD = REPO_DIR / "SMART-CLAUDE.md"
 GLOBAL_CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
 STARTUP_VBS_NAME = "smart-claude-md-sync.vbs"
+REPO_HOOK = REPO_DIR / "hooks" / "verify-before-stop.py"
+HOOKS_DIR = Path.home() / ".claude" / "hooks"
+HOOK_DEST = HOOKS_DIR / "verify-before-stop.py"
+SETTINGS_JSON = Path.home() / ".claude" / "settings.json"
 
 # Forward slashes work cross-platform in the @import path.
 IMPORT_LINE = f"@{REPO_CLAUDE_MD.as_posix()}"
@@ -70,9 +76,51 @@ def install() -> None:
     print(f"Installed login auto-sync: {target}")
 
 
+def install_hook() -> None:
+    """Copy the Stop hook into ~/.claude/hooks and wire it into settings.json."""
+    if not REPO_HOOK.exists():
+        print(f"Hook source not found: {REPO_HOOK}")
+        return
+
+    HOOKS_DIR.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(REPO_HOOK, HOOK_DEST)
+    print(f"Installed Stop hook: {HOOK_DEST}")
+
+    settings = {}
+    if SETTINGS_JSON.exists():
+        try:
+            settings = json.loads(SETTINGS_JSON.read_text(encoding="utf-8"))
+        except Exception:
+            print(f"Could not parse {SETTINGS_JSON}; skipping hook wiring.")
+            return
+
+    stop = settings.setdefault("hooks", {}).setdefault("Stop", [])
+    for group in stop:
+        for h in group.get("hooks", []):
+            if "verify-before-stop.py" in h.get("command", ""):
+                print("Stop hook already wired in settings.json")
+                return
+
+    py = sys.executable or "python"
+    stop.append({
+        "matcher": "",
+        "hooks": [{
+            "type": "command",
+            "shell": "bash",
+            "command": f'"{py}" "{HOOK_DEST.as_posix()}"',
+            "statusMessage": "Checking ✅ rule-confirmation...",
+        }],
+    })
+    SETTINGS_JSON.write_text(
+        json.dumps(settings, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print("Wired Stop hook into settings.json")
+
+
 if __name__ == "__main__":
     if "--install" in sys.argv[1:]:
         install()
+        install_hook()
     pull()
     ensure_import()
     print("Done.")

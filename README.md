@@ -52,6 +52,12 @@ This drops a hidden launcher (`smart-claude-md-sync.vbs`) in your **Startup
 folder**, so the rules re-sync silently at every login. The launcher is generated
 with your exact Python path, so it's reproducible on any machine you clone to.
 
+`--install` also deploys the **✅ Stop hook** (`hooks/verify-before-stop.py`) into
+`~/.claude/hooks/` and wires it into `~/.claude/settings.json` (idempotent). The
+hook enforces rule 6: it blocks a turn that doesn't end with ✅, nudging a
+rule-confirmation pass. It fails open and self-limits, so it never hard-locks a
+session.
+
 ### Daily auto-sync (fixed timer)
 
 For a true daily run regardless of login, schedule `sync.py` directly.

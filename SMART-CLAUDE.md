@@ -5,3 +5,4 @@
 3. **Don't assume — check first, ask only if you can't.**
 4. **Be succinct.** No filler preamble, labels, or process narration — lead with the substance.
 5. **WebFetch fails → Chrome DevTools MCP.** When WebFetch is blocked or returns a 403/error, don't retry `.json`/proxy/old.* variants — switch tool class to Chrome DevTools MCP (real browser).
+6. **Confirm with ✅.** End every reply with ✅ to certify all rules above were followed.
