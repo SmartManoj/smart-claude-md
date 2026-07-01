@@ -6,4 +6,5 @@
 4. **Be succinct.** No filler preamble, labels, or process narration — lead with the substance.
 5. **WebFetch fails → Chrome DevTools MCP.** When WebFetch is blocked or returns a 403/error, don't retry `.json`/proxy/old.* variants — switch tool class to Chrome DevTools MCP (real browser).
 6. **Be proactive.** Don't idle waiting on an async/sub-agent result — keep making progress with other available tools (e.g. MCP) in parallel.
-7. **Confirm with ✅.** End every reply with ✅ to certify all rules above were followed.
+
+End every reply with ✅ to certify all rules above were followed.
